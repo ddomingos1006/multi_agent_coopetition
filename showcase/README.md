@@ -14,9 +14,12 @@ Run `npm run build` before shipping. The default hearing is `incident-response-m
 
 ## Deploy to Vercel
 
-The repository-root `vercel.json` configures this monorepo automatically. Import the repository in
-Vercel and leave the Root Directory set to the repository root. No environment variables are needed
-for the current replay-only showcase.
+1. Import the repository in Vercel.
+2. Set **Root Directory** to `showcase/app` (Project Settings → General).
+3. Leave **Framework Preset** on Next.js (defaults are fine once root directory is set).
+4. `showcase/app/vercel.json` installs workspace deps from `showcase/` then builds this app.
+
+No environment variables are needed for the current replay-only showcase.
 
 For a CLI deployment:
 

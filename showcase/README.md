@@ -43,3 +43,24 @@ npx vercel --prod
 
 When the live Modal endpoint is connected later, add its public URL as a Vercel environment variable
 and keep `HUD_API_KEY` and `ANTHROPIC_API_KEY` only in Modal secrets.
+
+## Live Modal replay mode
+
+The bundled replay JSON remains the default. To use live inference, deploy the Modal app and point
+the Next.js app at the `live_replay` web function:
+
+```bash
+modal deploy ../modal_benchmark.py
+```
+
+Set these in Vercel or your local Next.js environment:
+
+```bash
+PARLIAMENT_MODAL_RUN_URL=https://<workspace>--context-window-parliament-benchmark-live-replay.modal.run
+NEXT_PUBLIC_PARLIAMENT_LIVE=1
+```
+
+You can also enable live mode for one browser session with `?live=1`. If the Modal endpoint is not
+configured or a live run fails, the frontend falls back to the bundled replay for the selected world.
+Use `PARLIAMENT_MODAL_KEY` and `PARLIAMENT_MODAL_SECRET` when the Modal endpoint is protected with
+proxy auth tokens.

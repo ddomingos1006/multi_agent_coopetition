@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { loadReplay, loadReplayIndex } from "@/lib/replay";
 import type {
   PolicyId,
@@ -12,6 +12,7 @@ import type {
 } from "@/lib/types";
 
 type ViewMode = "speaker" | "audit";
+type PlaybackState = "complete" | "running" | "paused";
 type Tone = "green" | "yellow" | "blue" | "neutral";
 
 const DEFAULT_WORLD = "incident-response-medium-004";
@@ -27,6 +28,7 @@ const GLYPH = {
   bullet: "\u2022",
   search: "\u2315",
   chevron: "\u2304",
+  arrow: "\u2192",
 };
 
 function titleize(value: string) {
@@ -55,11 +57,8 @@ function pct(value: number | undefined) {
   return `${Math.round((value ?? 0) * 100)}%`;
 }
 
-function replayVerdict(bundle: ReplayBundle | null) {
-  return (
-    bundle?.timeline.find((event) => event.verdict)?.verdict ??
-    null
-  );
+function replayVerdict(events: TimelineEvent[]) {
+  return events.find((event) => event.verdict)?.verdict ?? null;
 }
 
 function sampledBySource(testimony: TestimonyVisible[]) {
@@ -72,6 +71,107 @@ function sampledBySource(testimony: TestimonyVisible[]) {
     };
   }
   return map;
+}
+
+function latestBySource(testimony: TestimonyVisible[]) {
+  const map: Record<string, TestimonyVisible> = {};
+  for (const block of testimony) {
+    map[block.specialist_id] = block;
+  }
+  return map;
+}
+
+const DOCUMENT_SETS: Record<string, string[]> = {
+  incident_response: [
+    "Support tickets",
+    "On-call notes",
+    "Metrics board",
+    "API traces",
+    "Database counters",
+    "Frontend sessions",
+  ],
+  product_rollback: [
+    "Experiment notes",
+    "Customer feedback",
+    "Flag history",
+    "Release logs",
+    "Analytics chart",
+    "QA transcript",
+  ],
+  security_access_review: [
+    "Access requests",
+    "Identity audit",
+    "SIEM events",
+    "Policy exceptions",
+    "Admin logs",
+    "Reviewer notes",
+  ],
+};
+
+function documentForSource(
+  source: SpecialistCard,
+  index: number,
+  domain: string | undefined,
+) {
+  const labels = DOCUMENT_SETS[domain ?? ""] ?? [
+    "Source document",
+    "Operator notes",
+    "Measurement log",
+    "Trace excerpt",
+  ];
+  return {
+    id: `D${String(index + 1).padStart(2, "0")}`,
+    label: labels[index % labels.length],
+    detail: source.public_bid.replace(/^I can summarize /, "").replace(/^I have /, ""),
+  };
+}
+
+function eventDelay(event: TimelineEvent | undefined) {
+  if (!event) return 1900;
+  if (event.verdict) return 4600;
+  if (event.testimony_added) return 5200;
+  return 2100;
+}
+
+function promptFor(event: TimelineEvent | undefined, world?: ReplayBundle["world"]) {
+  if (!event) {
+    return "Replay loaded. Press Replay to watch the main agent dispatch targeted questions through the source documents.";
+  }
+  if (event.type === "session_start") {
+    return `Main agent opens ${event.payload?.specialists?.length ?? 0} source lanes for ${world?.world_id ?? "the docket"} and fans out document traversal.`;
+  }
+  if (event.verdict) {
+    return `Main agent synthesizes ${compact(event.verdict.decision)} from compact citations ${event.verdict.citation_ids.join(", ")}.`;
+  }
+  if (event.testimony_added) {
+    const question =
+      typeof event.args?.question === "string"
+        ? event.args.question
+        : `Cross-examining ${event.testimony_added.specialist_name}.`;
+    return `Main agent queries ${event.testimony_added.specialist_name}: ${question}`;
+  }
+  return `${event.tool ?? "tool_call"} completed.`;
+}
+
+function useTypewriter(text: string, active: boolean) {
+  const [typed, setTyped] = useState(text);
+
+  useEffect(() => {
+    if (!active) {
+      setTyped(text);
+      return;
+    }
+    let index = 0;
+    setTyped("");
+    const timer = window.setInterval(() => {
+      index += Math.max(1, Math.round(text.length / 96));
+      setTyped(text.slice(0, index));
+      if (index >= text.length) window.clearInterval(timer);
+    }, 64);
+    return () => window.clearInterval(timer);
+  }, [active, text]);
+
+  return typed;
 }
 
 function Metric({
@@ -135,12 +235,146 @@ function ViewToggle({
   );
 }
 
-function SourceActivity({
+function AgentFlow({
+  event,
+  typedPrompt,
+  playback,
+}: {
+  event: TimelineEvent | undefined;
+  typedPrompt: string;
+  playback: PlaybackState;
+}) {
+  const testimony = event?.testimony_added;
+  const verdict = event?.verdict;
+  const target = verdict
+    ? "Verdict"
+    : testimony?.specialist_name ?? (event?.type === "session_start" ? "Roster" : "Record");
+  const status =
+    playback === "running"
+      ? "streaming"
+      : playback === "paused"
+        ? "paused"
+        : "complete";
+
+  return (
+    <section className={`cvp-agent-flow cvp-agent-flow-${status}`} data-testid="agent-flow">
+      <div className="cvp-agent-kicker">
+        <span>{GLYPH.verdict} Main Agent</span>
+        <em>{status}</em>
+      </div>
+      <div className="cvp-agent-route">
+        <span>Planner</span>
+        <i>{GLYPH.arrow}</i>
+        <span>{target}</span>
+        <i>{GLYPH.arrow}</i>
+        <span>{verdict ? "Token-efficient answer" : "Compact record"}</span>
+      </div>
+      <p>
+        {typedPrompt}
+        {playback === "running" && <b aria-hidden="true" />}
+      </p>
+    </section>
+  );
+}
+
+function ParallelInterrogation({
   specialists,
   testimony,
+  activeId,
+  playback,
+  world,
 }: {
   specialists: SpecialistCard[];
   testimony: TestimonyVisible[];
+  activeId: string | null;
+  playback: PlaybackState;
+  world: ReplayBundle["world"];
+}) {
+  const sampled = useMemo(() => sampledBySource(testimony), [testimony]);
+  const latest = useMemo(() => latestBySource(testimony), [testimony]);
+  const max = Math.max(
+    1,
+    ...specialists.map((source) =>
+      Math.max(source.requested_tokens, sampled[source.id]?.tokens ?? 0),
+    ),
+  );
+  const activeTraversal = playback === "running" || playback === "paused";
+
+  return (
+    <section className="cvp-parallel-panel">
+      <div className="cvp-parallel-head">
+        <h3>{GLYPH.timeline} INTERROGATION TIMELINE</h3>
+        <span>{activeTraversal ? "parallel traversal" : "replay trace"}</span>
+      </div>
+
+      <div className="cvp-subagent-grid" data-testid="subagent-grid">
+        {specialists.map((source, index) => {
+          const block = latest[source.id];
+          const pulled = sampled[source.id]?.tokens ?? 0;
+          const active = activeId === source.id;
+          const state = active
+            ? "reporting"
+            : block
+              ? "returned"
+              : activeTraversal
+                ? "traversing"
+                : "queued";
+          const document = documentForSource(source, index, world.domain);
+
+          return (
+            <article className={`cvp-subagent-card ${state}`} data-state={state} key={source.id}>
+              <div className="cvp-subagent-head">
+                <span>{source.name}</span>
+                <em>{state}</em>
+              </div>
+              <p>{block?.question ?? source.public_bid}</p>
+              <div className="cvp-subagent-footer">
+                <span>{document.id}</span>
+                <span>{block ? `${block.token_count}t returned` : `${source.requested_tokens}t bid`}</span>
+              </div>
+              <div className="cvp-subagent-bar" aria-hidden="true">
+                <i style={{ width: `${(source.requested_tokens / max) * 100}%` }} />
+                <b style={{ width: `${(pulled / max) * 100}%` }} />
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      <div className="cvp-doc-layer">
+        <div className="cvp-parallel-head">
+          <h3>{GLYPH.source} EVIDENCE SOURCES</h3>
+          <span>documents traversed by subagents</span>
+        </div>
+        <div className="cvp-doc-grid">
+          {specialists.map((source, index) => {
+            const block = latest[source.id];
+            const active = activeId === source.id;
+            const state = active ? "active" : block ? "visited" : activeTraversal ? "scanning" : "idle";
+            const document = documentForSource(source, index, world.domain);
+
+            return (
+              <article className={`cvp-doc-card ${state}`} data-state={state} key={source.id}>
+                <span>{document.id}</span>
+                <strong>{document.label}</strong>
+                <p>{document.detail}</p>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SourceActivity({
+  specialists,
+  testimony,
+  activeId,
+}: {
+  specialists: SpecialistCard[];
+  testimony: TestimonyVisible[];
+  activeId: string | null;
 }) {
   const sampled = useMemo(() => sampledBySource(testimony), [testimony]);
   const max = Math.max(
@@ -156,8 +390,13 @@ function SourceActivity({
       <div className="cvp-source-list">
         {specialists.map((source) => {
           const pulled = sampled[source.id]?.tokens ?? 0;
+          const active = activeId === source.id;
           return (
-            <div className="cvp-source-row" key={source.id}>
+            <div
+              className={`cvp-source-row${active ? " active" : ""}`}
+              data-active={active ? "true" : "false"}
+              key={source.id}
+            >
               <div>
                 <span>{source.name}</span>
                 <small>{source.claimed_priority} bid</small>
@@ -175,17 +414,37 @@ function SourceActivity({
   );
 }
 
-function TimelinePanel({ events }: { events: TimelineEvent[] }) {
+function TimelinePanel({
+  events,
+  activeIndex,
+  playback,
+}: {
+  events: TimelineEvent[];
+  activeIndex: number | null;
+  playback: PlaybackState;
+}) {
   const calls = events.filter((event) => event.type === "tool_call");
   return (
     <article className="cvp-timeline-panel">
       <h3>{GLYPH.timeline} INTERROGATION TIMELINE</h3>
-      <div className="cvp-timeline">
+      <div className="cvp-timeline" data-testid="timeline">
+        {calls.length === 0 && (
+          <p className="cvp-empty">
+            {playback === "running"
+              ? "Speaker is scanning public cards..."
+              : "Replay the hearing to reveal the tool calls."}
+          </p>
+        )}
         {calls.map((event) => {
           const testimony = event.testimony_added;
           const verdict = event.verdict;
+          const active = activeIndex === event.index && playback !== "complete";
           return (
-            <div className="cvp-timeline-row" key={event.index}>
+            <div
+              className={`cvp-timeline-row${active ? " active" : ""}`}
+              data-active={active ? "true" : "false"}
+              key={event.index}
+            >
               <span>{String(event.index).padStart(2, "0")}</span>
               <div>
                 <strong>{event.tool}</strong>
@@ -290,51 +549,64 @@ function RecordTable({
 }) {
   const citations = new Set(citationIds);
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>SOURCE</th>
-          <th>MODE</th>
-          <th>TOKENS</th>
-          <th>{audit ? "CITATION" : "TESTIMONY"}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {testimony.map((block) => (
-          <tr key={block.id}>
-            <td>{block.id}</td>
-            <td>{block.specialist_name}</td>
-            <td>
-              <span className={`cvp-pill ${block.mode === "cross_exam" ? "green" : "yellow"}`}>
-                {block.mode === "cross_exam" ? "Cross-exam" : "Floor"}
-              </span>
-            </td>
-            <td>{block.token_count}</td>
-            <td>
-              {audit ? (
-                <span className={`cvp-pill ${citations.has(block.id) ? "blue" : "neutral"}`}>
-                  {citations.has(block.id) ? "Cited" : "Unused"}
-                </span>
-              ) : (
-                block.visible_text
-              )}
-            </td>
+    <div className="cvp-record-table" data-testid="record-table">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>SOURCE</th>
+            <th>MODE</th>
+            <th>TOKENS</th>
+            <th>{audit ? "CITATION" : "TESTIMONY"}</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {testimony.length === 0 && (
+            <tr className="cvp-empty-row">
+              <td colSpan={5}>No testimony has entered the official record yet.</td>
+            </tr>
+          )}
+          {testimony.map((block) => (
+            <tr key={block.id}>
+              <td>{block.id}</td>
+              <td>{block.specialist_name}</td>
+              <td>
+                <span className={`cvp-pill ${block.mode === "cross_exam" ? "green" : "yellow"}`}>
+                  {block.mode === "cross_exam" ? "Cross-exam" : "Floor"}
+                </span>
+              </td>
+              <td>{block.token_count}</td>
+              <td>
+                {audit ? (
+                  <span className={`cvp-pill ${citations.has(block.id) ? "blue" : "neutral"}`}>
+                    {citations.has(block.id) ? "Cited" : "Unused"}
+                  </span>
+                ) : (
+                  block.visible_text
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
 function SpeakerRightPanel({
-  bundle,
+  events,
   verdict,
+  currentEvent,
+  typedPrompt,
+  playback,
 }: {
-  bundle: ReplayBundle;
+  events: TimelineEvent[];
   verdict: NonNullable<TimelineEvent["verdict"]> | null;
+  currentEvent: TimelineEvent | undefined;
+  typedPrompt: string;
+  playback: PlaybackState;
 }) {
-  const activity = bundle.timeline
+  const activity = events
     .filter((event) => event.type === "tool_call")
     .slice(-5)
     .reverse();
@@ -342,7 +614,7 @@ function SpeakerRightPanel({
   return (
     <>
       <section className="cvp-right-section cvp-output">
-        <h2>{GLYPH.verdict} SPEAKER OUTPUT</h2>
+        <h2>{verdict ? `${GLYPH.verdict} MAIN AGENT OUTPUT` : `${GLYPH.timeline} LIVE AGENT TRACE`}</h2>
         {verdict ? (
           <>
             <div className="cvp-output-decision">{compact(verdict.decision)}</div>
@@ -357,12 +629,26 @@ function SpeakerRightPanel({
             <blockquote>{verdict.rationale}</blockquote>
           </>
         ) : (
-          <p>No verdict in replay.</p>
+          <>
+            <div className="cvp-output-decision">
+              {playback === "complete" ? "Ready To Replay" : "Gathering Evidence"}
+            </div>
+            <p>{typedPrompt}</p>
+            <div className="cvp-citation-row">
+              <span className={`cvp-pill ${playback === "running" ? "green" : "neutral"}`}>
+                {playback}
+              </span>
+              {currentEvent?.testimony_added && (
+                <span className="cvp-pill blue">{currentEvent.testimony_added.specialist_name}</span>
+              )}
+            </div>
+          </>
         )}
       </section>
 
       <section className="cvp-right-section cvp-recent">
         <h2>{GLYPH.timeline} TOOL ACTIVITY</h2>
+        {activity.length === 0 && <p className="cvp-empty">No tool calls yet.</p>}
         {activity.map((event) => (
           <article key={event.index}>
             <p>{event.tool}</p>
@@ -409,10 +695,12 @@ function AuditRightPanel({ bundle }: { bundle: ReplayBundle }) {
 export default function Page() {
   const [catalog, setCatalog] = useState<ReplayIndex | null>(null);
   const [worldId, setWorldId] = useState(DEFAULT_WORLD);
-  const [policy, setPolicy] = useState<PolicyId>(DEFAULT_POLICY);
   const [mode, setMode] = useState<ViewMode>("speaker");
   const [bundle, setBundle] = useState<ReplayBundle | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [playback, setPlayback] = useState<PlaybackState>("complete");
+  const [playhead, setPlayhead] = useState<number | null>(null);
+  const [autoplay, setAutoplay] = useState(false);
 
   useEffect(() => {
     loadReplayIndex().then(setCatalog).catch((error) => {
@@ -421,16 +709,20 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    const requested = new URLSearchParams(window.location.search).get("view");
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("view");
     if (requested === "audit" || requested === "speaker") {
       setMode(requested);
     }
+    setAutoplay(params.get("autoplay") === "1");
   }, []);
 
   useEffect(() => {
     let active = true;
     setLoadError(null);
-    loadReplay(worldId, policy)
+    setPlayback("complete");
+    setPlayhead(null);
+    loadReplay(worldId, DEFAULT_POLICY)
       .then((next) => {
         if (active) setBundle(next);
       })
@@ -443,26 +735,83 @@ export default function Page() {
     return () => {
       active = false;
     };
-  }, [worldId, policy]);
+  }, [worldId]);
+
+  const startReplay = useCallback(() => {
+    if (!bundle) return;
+    setPlayhead(0);
+    setPlayback("running");
+  }, [bundle]);
+
+  useEffect(() => {
+    if (bundle && autoplay) {
+      startReplay();
+      setAutoplay(false);
+    }
+  }, [autoplay, bundle, startReplay]);
+
+  useEffect(() => {
+    if (!bundle || playback !== "running") return;
+    const events = bundle.timeline;
+    const maxIndex = events.at(-1)?.index ?? 0;
+    const current = events.find((event) => event.index === playhead);
+
+    if ((playhead ?? 0) >= maxIndex) {
+      const done = window.setTimeout(() => {
+        setPlayback("complete");
+      }, eventDelay(current));
+      return () => window.clearTimeout(done);
+    }
+
+    const timer = window.setTimeout(() => {
+      setPlayhead((currentHead) => Math.min(maxIndex, (currentHead ?? 0) + 1));
+    }, eventDelay(current));
+    return () => window.clearTimeout(timer);
+  }, [bundle, playhead, playback]);
+
+  const togglePlayback = () => {
+    if (!bundle) return;
+    if (playback === "running") {
+      setPlayback("paused");
+      return;
+    }
+    if (playback === "paused") {
+      setPlayback("running");
+      return;
+    }
+    startReplay();
+  };
 
   const preset = catalog?.presets.find((item) => item.world_id === worldId);
-  const verdict = replayVerdict(bundle);
+  const allEvents = bundle?.timeline ?? [];
+  const visibleEvents =
+    playhead == null ? allEvents : allEvents.filter((event) => event.index <= playhead);
+  const visibleTestimony = visibleEvents
+    .map((event) => event.testimony_added)
+    .filter((item): item is TestimonyVisible => Boolean(item));
+  const visibleVerdict = replayVerdict(visibleEvents);
+  const activeEvent =
+    playhead == null ? undefined : allEvents.find((event) => event.index === playhead);
+  const activeSpecialistId = activeEvent?.testimony_added?.specialist_id ?? null;
+  const currentPrompt = promptFor(activeEvent, bundle?.world);
+  const typedPrompt = useTypewriter(currentPrompt, playback === "running");
   const specialists = bundle?.timeline[0]?.payload?.specialists ?? [];
-  const testimony = bundle?.final_record.testimony ?? [];
-  const citationIds = verdict?.citation_ids ?? [];
-  const policyMeta = catalog?.policies.find((item) => item.id === policy);
-  const budgetUsed = bundle?.final_record.budget_used ?? 0;
+  const citationIds = visibleVerdict?.citation_ids ?? [];
+  const lastBudgetEvent = [...visibleEvents]
+    .reverse()
+    .find((event) => event.budget_used !== undefined);
+  const budgetUsed = Number(lastBudgetEvent?.budget_used ?? 0);
   const budgetTotal = bundle?.world.token_budget ?? 1;
-  const interactions = bundle?.timeline.filter(
-    (event) => event.testimony_added,
-  ).length ?? 0;
+  const interactions = visibleEvents.filter((event) => event.testimony_added).length;
+  const replayLabel =
+    playback === "running" ? "PAUSE" : playback === "paused" ? "RESUME" : "REPLAY";
 
   const speakerMetrics = [
     {
       icon: GLYPH.source,
       label: "EVIDENCE INPUTS",
       value: String(specialists.length),
-      status: "public cards",
+      status: playback === "running" ? "cards open" : "public cards",
       tone: "green" as Tone,
     },
     {
@@ -482,9 +831,13 @@ export default function Page() {
     {
       icon: GLYPH.verdict,
       label: "FINAL ANSWER",
-      value: verdict ? shortOption(verdict.decision) : "Pending",
-      status: verdict ? `${Math.round(verdict.confidence * 100)}% confidence` : "no verdict",
-      tone: "green" as Tone,
+      value: visibleVerdict ? shortOption(visibleVerdict.decision) : "Pending",
+      status: visibleVerdict
+        ? `${Math.round(visibleVerdict.confidence * 100)}% confidence`
+        : playback === "running"
+          ? "synthesizing"
+          : "ready",
+      tone: visibleVerdict ? "green" as Tone : "neutral" as Tone,
     },
   ];
 
@@ -523,74 +876,35 @@ export default function Page() {
 
   return (
     <main className="cvp-desktop">
-      <aside className="cvp-sidebar">
-        <div className="cvp-brand-row">
-          <div className="cvp-brand-mark" aria-hidden="true">
-            {GLYPH.mark}
-          </div>
-          <div>
-            <div className="cvp-brand-name">PARLIAMENT</div>
-            <p>context window</p>
-          </div>
-        </div>
-
-        <label className="cvp-search">
-          <span aria-hidden="true">{GLYPH.search}</span>
-          <select
-            value={worldId}
-            onChange={(event) => setWorldId(event.target.value)}
-            aria-label="Replay docket"
-          >
-            {catalog?.presets.map((item) => (
-              <option value={item.world_id} key={item.world_id}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <nav className="cvp-nav-list" aria-label="Sections">
-          {[
-            ["Problem", GLYPH.record],
-            ["Evidence Inputs", GLYPH.source],
-            ["Interrogation", GLYPH.timeline],
-            ["Official Record", GLYPH.record],
-            ["Verdict", GLYPH.verdict],
-          ].map(([label, icon], index) => (
-            <a className={index === 0 ? "active" : undefined} href="#" key={label}>
-              <span aria-hidden="true">{icon}</span>
-              {label}
-            </a>
-          ))}
-        </nav>
-
-        <div className="cvp-sidebar-divider" />
-
-        <label className="cvp-policy-select">
-          <span>Speaker policy</span>
-          <select
-            value={policy}
-            onChange={(event) => setPolicy(event.target.value as PolicyId)}
-          >
-            {catalog?.policies.map((item) => (
-              <option value={item.id} key={item.id}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <section className="cvp-upgrade">
-          <h2>{GLYPH.audit} Replay Mode</h2>
-          <p>{policyMeta?.subtitle ?? "Loading replay metadata."}</p>
-          <span>{bundle?.meta.policy_label ?? "Speaker"}</span>
-        </section>
-      </aside>
-
       <section className="cvp-main-panel">
         <header className="cvp-topbar">
-          <p className="cvp-eyebrow">HEARING DESK</p>
-          <ViewToggle mode={mode} onChange={setMode} />
+          <div className="cvp-brand-row cvp-brand-row-inline">
+            <div className="cvp-brand-mark" aria-hidden="true">
+              {GLYPH.mark}
+            </div>
+            <div>
+              <div className="cvp-brand-name">PARLIAMENT</div>
+              <p>context window</p>
+            </div>
+          </div>
+
+          <div className="cvp-topbar-controls">
+            <label className="cvp-search">
+              <span aria-hidden="true">{GLYPH.search}</span>
+              <select
+                value={worldId}
+                onChange={(event) => setWorldId(event.target.value)}
+                aria-label="Replay docket"
+              >
+                {catalog?.presets.map((item) => (
+                  <option value={item.world_id} key={item.world_id}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <ViewToggle mode={mode} onChange={setMode} />
+          </div>
         </header>
 
         <section className="cvp-problem">
@@ -615,31 +929,45 @@ export default function Page() {
           <section className="cvp-stats-card">
             <div className="cvp-section-head">
               <div>
-                <h2>{mode === "speaker" ? "Attention Allocation" : "Scoring Internals"}</h2>
+                <h2>{mode === "speaker" ? "Agent Deliberation" : "Scoring Internals"}</h2>
                 <p>
                   {mode === "speaker"
-                    ? "Public sources, paid testimony, and the compact official record"
+                    ? "Main-agent fan-out, parallel subagent traversal, and compact record synthesis"
                     : "Ground-truth comparison and reward decomposition"}
                 </p>
               </div>
-              <button type="button">
-                REPLAY {GLYPH.chevron}
+              <button
+                type="button"
+                data-testid="replay-button"
+                onClick={togglePlayback}
+              >
+                {replayLabel}
               </button>
             </div>
 
-            <div className="cvp-stats-grid">
-              {mode === "speaker" ? (
-                <>
-                  <SourceActivity specialists={specialists} testimony={testimony} />
-                  <TimelinePanel events={bundle.timeline} />
-                </>
-              ) : (
+            {mode === "speaker" ? (
+              <>
+                <AgentFlow
+                  event={activeEvent}
+                  typedPrompt={typedPrompt}
+                  playback={playback}
+                />
+                <ParallelInterrogation
+                  specialists={specialists}
+                  testimony={visibleTestimony}
+                  activeId={activeSpecialistId}
+                  playback={playback}
+                  world={bundle.world}
+                />
+              </>
+            ) : (
+              <div className="cvp-stats-grid cvp-audit-grid">
                 <>
                   <ScoreBars bundle={bundle} />
                   <TokenBuckets bundle={bundle} />
                 </>
-              )}
-            </div>
+              </div>
+            )}
           </section>
         )}
 
@@ -651,7 +979,7 @@ export default function Page() {
               <span className="cvp-filter">{mode === "speaker" ? "PUBLIC" : "AUDIT"}</span>
             </div>
           </div>
-          <RecordTable testimony={testimony} citationIds={citationIds} audit={mode === "audit"} />
+          <RecordTable testimony={visibleTestimony} citationIds={citationIds} audit={mode === "audit"} />
         </section>
       </section>
 
@@ -659,7 +987,13 @@ export default function Page() {
         <button className="cvp-edge-pill" type="button" aria-label="Panel handle" />
         {bundle ? (
           mode === "speaker" ? (
-            <SpeakerRightPanel bundle={bundle} verdict={verdict} />
+            <SpeakerRightPanel
+              events={visibleEvents}
+              verdict={visibleVerdict}
+              currentEvent={activeEvent}
+              typedPrompt={typedPrompt}
+              playback={playback}
+            />
           ) : (
             <AuditRightPanel bundle={bundle} />
           )

@@ -14,12 +14,25 @@ Run `npm run build` before shipping. The default hearing is `incident-response-m
 
 ## Deploy to Vercel
 
-1. Import the repository in Vercel.
-2. Set **Root Directory** to `showcase/app` (Project Settings → General).
-3. Leave **Framework Preset** on Next.js (defaults are fine once root directory is set).
-4. `showcase/app/vercel.json` installs workspace deps from `showcase/` then builds this app.
+### Option A — repo root (simplest)
 
-No environment variables are needed for the current replay-only showcase.
+1. Import the repository in Vercel.
+2. Leave **Root Directory** empty (repository root).
+3. In **Project Settings → Build & Development Settings**, clear any custom **Install Command** and **Build Command** overrides so the repo-root `vercel.json` is used:
+   - Install: `npm ci --prefix showcase`
+   - Build: `npm run build --prefix showcase`
+4. **Framework Preset:** Next.js.
+
+### Option B — app subdirectory
+
+1. Set **Root Directory** to `showcase/app`.
+2. Clear install/build overrides so `showcase/app/vercel.json` applies:
+   - Install: `cd .. && npm ci`
+   - Build: `npm run build`
+
+**Do not** combine Root Directory `showcase/app` with Install Command `npm ci --prefix showcase` — that path is wrong and causes the `EUSAGE` / missing lockfile error.
+
+Sync your fork to latest `main` before redeploying. No environment variables are needed for the replay-only showcase.
 
 For a CLI deployment:
 

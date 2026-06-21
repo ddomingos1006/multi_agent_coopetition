@@ -1,0 +1,305 @@
+{
+  "meta": {
+    "world_id": "incident-response-medium-004",
+    "domain": "incident_response",
+    "difficulty": "medium",
+    "policy_id": "loud_capture",
+    "policy_label": "Loud Capture",
+    "generated_at": "2026-06-21T10:50:19.618907+00:00"
+  },
+  "world": {
+    "world_id": "incident-response-medium-004",
+    "domain": "incident_response",
+    "difficulty": "medium",
+    "narrative": "An incident commander must diagnose a production incident and choose action.",
+    "token_budget": 500,
+    "max_interactions": 10,
+    "decision_options": [
+      "rollback_feature_flag",
+      "scale_database",
+      "patch_config",
+      "disable_endpoint",
+      "no_action_monitor",
+      "uncertain"
+    ],
+    "root_cause_options": [
+      "database_lock_contention",
+      "cache_thundering_herd",
+      "frontend_regression",
+      "third_party_api",
+      "bad_metrics_pipeline",
+      "unknown"
+    ],
+    "ground_truth": {
+      "decision": "rollback_feature_flag",
+      "root_cause": "cache_thundering_herd"
+    }
+  },
+  "reward": {
+    "reward": 0.299485,
+    "subscores": {
+      "gated_decision_accuracy": 0.06086956521739129,
+      "gated_root_cause_accuracy": 0.0,
+      "evidence_recall": 0.47826086956521746,
+      "evidence_precision": 0.44554455445544555,
+      "non_redundancy": 1.0,
+      "citation_quality": 0.27173913043478265,
+      "budget_discipline": 1.0,
+      "unsupported_claim_penalty": 0.7000000000000001
+    },
+    "metadata": {
+      "budget_used": 101,
+      "budget_total": 500,
+      "num_interactions": 3,
+      "final_decision": "scale_database",
+      "final_root_cause": "database_lock_contention",
+      "confidence": 0.8,
+      "total_record_tokens": 101,
+      "relevant_tokens": 45,
+      "decoy_tokens": 37,
+      "fluff_tokens": 19,
+      "duplicate_tokens": 0,
+      "cited_testimony_ids": [
+        "T1",
+        "T2"
+      ],
+      "valid_citation_ids": [
+        "T1",
+        "T2"
+      ]
+    }
+  },
+  "timeline": [
+    {
+      "index": 0,
+      "type": "session_start",
+      "payload": {
+        "narrative": "An incident commander must diagnose a production incident and choose action.",
+        "specialists": [
+          {
+            "id": "support",
+            "name": "Support",
+            "role": "Support",
+            "public_bid": "I have a mild-looking user reports signal that may be worth checking if budget allows. Requesting 67 tokens.",
+            "claimed_priority": "low",
+            "requested_tokens": 67,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "oncall_manager",
+            "name": "On-call Manager",
+            "role": "On-call Manager",
+            "public_bid": "My lane has a high-priority story and I can give concrete examples. Requesting 148 tokens.",
+            "claimed_priority": "high",
+            "requested_tokens": 148,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "observability",
+            "name": "Observability/SRE",
+            "role": "Observability/SRE",
+            "public_bid": "I can summarize structured measurement quality without claiming certainty from the public bid. Requesting 94 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 94,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "api",
+            "name": "API",
+            "role": "API",
+            "public_bid": "I can summarize structured system behavior without claiming certainty from the public bid. Requesting 94 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 94,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "database",
+            "name": "Database",
+            "role": "Database",
+            "public_bid": "I can summarize structured system behavior without claiming certainty from the public bid. Requesting 94 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 94,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "frontend",
+            "name": "Frontend",
+            "role": "Frontend",
+            "public_bid": "I saw mixed signals from cache thundering herd, including some anecdotes that may or may not generalize. Requesting 94 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 94,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          }
+        ],
+        "budget_total": 500,
+        "max_interactions": 10
+      }
+    },
+    {
+      "index": 1,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "incident-response-medium-004",
+        "specialist_id": "oncall_manager",
+        "token_budget": 148
+      },
+      "budget_used": 56,
+      "budget_remaining": 444,
+      "budget_total": 500,
+      "interactions_used": 1,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T1",
+        "specialist_id": "oncall_manager",
+        "specialist_name": "On-call Manager",
+        "role": "On-call Manager",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "On-call Manager framing: the headline looks urgent, but I will separate examples from proof. Example from On-call Manager: A database backup started near the incident, creating a normal CPU bump. Example from On-call Manager: A harmless logging deploy finished 25 minutes earlier.",
+        "token_count": 56
+      },
+      "verdict": null
+    },
+    {
+      "index": 2,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "incident-response-medium-004",
+        "specialist_id": "observability",
+        "token_budget": 94
+      },
+      "budget_used": 79,
+      "budget_remaining": 421,
+      "budget_total": 500,
+      "interactions_used": 2,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T2",
+        "specialist_id": "observability",
+        "specialist_name": "Observability/SRE",
+        "role": "Observability/SRE",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Observability/SRE evidence: Cache miss rate rose from 12% to 83% while database CPU followed 11 minutes later.",
+        "token_count": 23
+      },
+      "verdict": null
+    },
+    {
+      "index": 3,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "incident-response-medium-004",
+        "specialist_id": "api",
+        "token_budget": 94
+      },
+      "budget_used": 101,
+      "budget_remaining": 399,
+      "budget_total": 500,
+      "interactions_used": 3,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T3",
+        "specialist_id": "api",
+        "specialist_name": "API",
+        "role": "API",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "API evidence: The affected endpoint is /recommendations; checkout and account APIs stayed under 0.6% errors.",
+        "token_count": 22
+      },
+      "verdict": null
+    },
+    {
+      "index": 4,
+      "type": "tool_call",
+      "tool": "submit_verdict",
+      "ok": true,
+      "message": "verdict recorded",
+      "args": {
+        "world_id": "incident-response-medium-004",
+        "decision": "scale_database",
+        "confidence": 0.8,
+        "root_cause": "database_lock_contention",
+        "citation_ids": [
+          "T1",
+          "T2"
+        ],
+        "rationale": "The loudest testimony appeared to support database_lock_contention."
+      },
+      "budget_used": 101,
+      "budget_remaining": 399,
+      "budget_total": 500,
+      "interactions_used": 3,
+      "max_interactions": 10,
+      "testimony_added": null,
+      "verdict": {
+        "decision": "scale_database",
+        "confidence": 0.8,
+        "root_cause": "database_lock_contention",
+        "citation_ids": [
+          "T1",
+          "T2"
+        ],
+        "rationale": "The loudest testimony appeared to support database_lock_contention."
+      }
+    }
+  ],
+  "final_record": {
+    "budget_used": 101,
+    "budget_remaining": 399,
+    "testimony": [
+      {
+        "id": "T1",
+        "specialist_id": "oncall_manager",
+        "specialist_name": "On-call Manager",
+        "role": "On-call Manager",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "On-call Manager framing: the headline looks urgent, but I will separate examples from proof. Example from On-call Manager: A database backup started near the incident, creating a normal CPU bump. Example from On-call Manager: A harmless logging deploy finished 25 minutes earlier.",
+        "token_count": 56
+      },
+      {
+        "id": "T2",
+        "specialist_id": "observability",
+        "specialist_name": "Observability/SRE",
+        "role": "Observability/SRE",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Observability/SRE evidence: Cache miss rate rose from 12% to 83% while database CPU followed 11 minutes later.",
+        "token_count": 23
+      },
+      {
+        "id": "T3",
+        "specialist_id": "api",
+        "specialist_name": "API",
+        "role": "API",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "API evidence: The affected endpoint is /recommendations; checkout and account APIs stayed under 0.6% errors.",
+        "token_count": 22
+      }
+    ]
+  }
+}

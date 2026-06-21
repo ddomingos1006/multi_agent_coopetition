@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-
 from parliament.models import World
 
 
@@ -19,7 +17,6 @@ FINAL_VERDICT_SCHEMA = {
 def task_prompt(world: World) -> str:
     """Build the visible task prompt for the Speaker."""
 
-    schema = json.dumps(FINAL_VERDICT_SCHEMA, indent=2)
     decisions = ", ".join(world.decision_options)
     roots = ", ".join(world.root_cause_options)
     tools = "\n".join(
@@ -32,6 +29,10 @@ def task_prompt(world: World) -> str:
         ]
     )
     return f"""You are the Speaker of a context-window parliament.
+
+STRICT ACTION PROTOCOL: Every assistant response must be one or more native tool calls. Never emit
+analysis, deliberation, narration, XML tool-call markup, or verdict JSON as assistant text. Think
+briefly and silently, then act through tools. Free-text assistant output is an invalid action.
 
 World ID: {world.world_id}
 
@@ -55,8 +56,9 @@ generic public bid is not enough.
 Your score depends on making a correct evidence-backed decision under limited context. The final
 verdict should cite testimony IDs from the official record that support the decision and root cause.
 
-Submit the verdict with submit_verdict, then finish with the same JSON:
+Once sufficient evidence is collected, call submit_verdict in that same response. Do not narrate,
+summarize, reconsider, or announce the answer first. A successful submit_verdict call completes
+the task. Do not produce any response after it.
 
-{schema}
+/no_think
 """
-

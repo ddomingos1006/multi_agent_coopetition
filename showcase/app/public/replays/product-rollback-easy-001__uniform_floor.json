@@ -1,0 +1,372 @@
+{
+  "meta": {
+    "world_id": "product-rollback-easy-001",
+    "domain": "product_rollback",
+    "difficulty": "easy",
+    "policy_id": "uniform_floor",
+    "policy_label": "Uniform Floor",
+    "generated_at": "2026-06-21T10:50:19.626711+00:00"
+  },
+  "world": {
+    "world_id": "product-rollback-easy-001",
+    "domain": "product_rollback",
+    "difficulty": "easy",
+    "narrative": "An internal product review is deciding whether to roll back Feature X after launch.",
+    "token_budget": 650,
+    "max_interactions": 12,
+    "decision_options": [
+      "rollback",
+      "do_not_rollback",
+      "partial_rollback",
+      "uncertain"
+    ],
+    "root_cause_options": [
+      "mobile_latency",
+      "onboarding_copy",
+      "pricing_change",
+      "data_bug",
+      "seasonality",
+      "unknown"
+    ],
+    "ground_truth": {
+      "decision": "do_not_rollback",
+      "root_cause": "data_bug"
+    }
+  },
+  "reward": {
+    "reward": 0.561687,
+    "subscores": {
+      "gated_decision_accuracy": 0.19,
+      "gated_root_cause_accuracy": 0.0,
+      "evidence_recall": 1.0,
+      "evidence_precision": 0.6149068322981367,
+      "non_redundancy": 1.0,
+      "citation_quality": 1.0,
+      "budget_discipline": 1.0,
+      "unsupported_claim_penalty": 0.7000000000000001
+    },
+    "metadata": {
+      "budget_used": 161,
+      "budget_total": 650,
+      "num_interactions": 5,
+      "final_decision": "partial_rollback",
+      "final_root_cause": "onboarding_copy",
+      "confidence": 0.62,
+      "total_record_tokens": 161,
+      "relevant_tokens": 99,
+      "decoy_tokens": 33,
+      "fluff_tokens": 29,
+      "duplicate_tokens": 0,
+      "cited_testimony_ids": [
+        "T2",
+        "T4",
+        "T5"
+      ],
+      "valid_citation_ids": [
+        "T2",
+        "T4",
+        "T5"
+      ]
+    }
+  },
+  "timeline": [
+    {
+      "index": 0,
+      "type": "session_start",
+      "payload": {
+        "narrative": "An internal product review is deciding whether to roll back Feature X after launch.",
+        "specialists": [
+          {
+            "id": "infra",
+            "name": "Infra",
+            "role": "Infra",
+            "public_bid": "I can summarize structured system behavior without claiming certainty from the public bid. Requesting 82 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 82,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "support",
+            "name": "Support",
+            "role": "Support",
+            "public_bid": "I saw mixed signals from user reports, including some anecdotes that may or may not generalize. Requesting 82 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 82,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "sales",
+            "name": "Sales",
+            "role": "Sales",
+            "public_bid": "My lane has a high-priority story and I can give concrete examples. Requesting 136 tokens.",
+            "claimed_priority": "high",
+            "requested_tokens": 136,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "experimentation",
+            "name": "Experimentation",
+            "role": "Experimentation",
+            "public_bid": "I can summarize structured sample quality without claiming certainty from the public bid. Requesting 82 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 82,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "metrics",
+            "name": "Metrics",
+            "role": "Metrics",
+            "public_bid": "I have a mild-looking measurement quality signal that may be worth checking if budget allows. Requesting 55 tokens.",
+            "claimed_priority": "low",
+            "requested_tokens": 55,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          }
+        ],
+        "budget_total": 650,
+        "max_interactions": 12
+      }
+    },
+    {
+      "index": 1,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "product-rollback-easy-001",
+        "specialist_id": "infra",
+        "token_budget": 90
+      },
+      "budget_used": 39,
+      "budget_remaining": 611,
+      "budget_total": 650,
+      "interactions_used": 1,
+      "max_interactions": 12,
+      "testimony_added": {
+        "id": "T1",
+        "specialist_id": "infra",
+        "specialist_name": "Infra",
+        "role": "Infra",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Infra evidence: A 12-minute latency blip occurred in a different region and did not overlap the affected metric window. Infra evidence: Executive review notes show no customer escalation tied to the launch date.",
+        "token_count": 39
+      },
+      "verdict": null
+    },
+    {
+      "index": 2,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "product-rollback-easy-001",
+        "specialist_id": "support",
+        "token_budget": 90
+      },
+      "budget_used": 77,
+      "budget_remaining": 573,
+      "budget_total": 650,
+      "interactions_used": 2,
+      "max_interactions": 12,
+      "testimony_added": {
+        "id": "T2",
+        "specialist_id": "support",
+        "specialist_name": "Support",
+        "role": "Support",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Support evidence: Complaint volume changed from 41 to 43 tickets per day, not a material launch spike. Support evidence: One viral post complained about onboarding, but it came from a beta build.",
+        "token_count": 38
+      },
+      "verdict": null
+    },
+    {
+      "index": 3,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "product-rollback-easy-001",
+        "specialist_id": "sales",
+        "token_budget": 90
+      },
+      "budget_used": 108,
+      "budget_remaining": 542,
+      "budget_total": 650,
+      "interactions_used": 3,
+      "max_interactions": 12,
+      "testimony_added": {
+        "id": "T3",
+        "specialist_id": "sales",
+        "specialist_name": "Sales",
+        "role": "Sales",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Sales framing: the headline looks urgent, but I will separate examples from proof. Example from Sales: A large prospect paused a demo for unrelated procurement review.",
+        "token_count": 31
+      },
+      "verdict": null
+    },
+    {
+      "index": 4,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "product-rollback-easy-001",
+        "specialist_id": "experimentation",
+        "token_budget": 90
+      },
+      "budget_used": 130,
+      "budget_remaining": 520,
+      "budget_total": 650,
+      "interactions_used": 4,
+      "max_interactions": 12,
+      "testimony_added": {
+        "id": "T4",
+        "specialist_id": "experimentation",
+        "specialist_name": "Experimentation",
+        "role": "Experimentation",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Experimentation evidence: Server-side successful onboarding counts stayed within 0.7% of the pre-launch baseline.",
+        "token_count": 22
+      },
+      "verdict": null
+    },
+    {
+      "index": 5,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "product-rollback-easy-001",
+        "specialist_id": "metrics",
+        "token_budget": 90
+      },
+      "budget_used": 161,
+      "budget_remaining": 489,
+      "budget_total": 650,
+      "interactions_used": 5,
+      "max_interactions": 12,
+      "testimony_added": {
+        "id": "T5",
+        "specialist_id": "metrics",
+        "specialist_name": "Metrics",
+        "role": "Metrics",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Metrics caveat: my signal is not loud in the public summaries. Metrics evidence: The apparent activation drop starts exactly when the tracking event renamed completed_onboarding to setup_done.",
+        "token_count": 31
+      },
+      "verdict": null
+    },
+    {
+      "index": 6,
+      "type": "tool_call",
+      "tool": "submit_verdict",
+      "ok": true,
+      "message": "verdict recorded",
+      "args": {
+        "world_id": "product-rollback-easy-001",
+        "decision": "partial_rollback",
+        "confidence": 0.62,
+        "root_cause": "onboarding_copy",
+        "citation_ids": [
+          "T2",
+          "T4",
+          "T5"
+        ],
+        "rationale": "The visible record most strongly points to onboarding_copy."
+      },
+      "budget_used": 161,
+      "budget_remaining": 489,
+      "budget_total": 650,
+      "interactions_used": 5,
+      "max_interactions": 12,
+      "testimony_added": null,
+      "verdict": {
+        "decision": "partial_rollback",
+        "confidence": 0.62,
+        "root_cause": "onboarding_copy",
+        "citation_ids": [
+          "T2",
+          "T4",
+          "T5"
+        ],
+        "rationale": "The visible record most strongly points to onboarding_copy."
+      }
+    }
+  ],
+  "final_record": {
+    "budget_used": 161,
+    "budget_remaining": 489,
+    "testimony": [
+      {
+        "id": "T1",
+        "specialist_id": "infra",
+        "specialist_name": "Infra",
+        "role": "Infra",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Infra evidence: A 12-minute latency blip occurred in a different region and did not overlap the affected metric window. Infra evidence: Executive review notes show no customer escalation tied to the launch date.",
+        "token_count": 39
+      },
+      {
+        "id": "T2",
+        "specialist_id": "support",
+        "specialist_name": "Support",
+        "role": "Support",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Support evidence: Complaint volume changed from 41 to 43 tickets per day, not a material launch spike. Support evidence: One viral post complained about onboarding, but it came from a beta build.",
+        "token_count": 38
+      },
+      {
+        "id": "T3",
+        "specialist_id": "sales",
+        "specialist_name": "Sales",
+        "role": "Sales",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Sales framing: the headline looks urgent, but I will separate examples from proof. Example from Sales: A large prospect paused a demo for unrelated procurement review.",
+        "token_count": 31
+      },
+      {
+        "id": "T4",
+        "specialist_id": "experimentation",
+        "specialist_name": "Experimentation",
+        "role": "Experimentation",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Experimentation evidence: Server-side successful onboarding counts stayed within 0.7% of the pre-launch baseline.",
+        "token_count": 22
+      },
+      {
+        "id": "T5",
+        "specialist_id": "metrics",
+        "specialist_name": "Metrics",
+        "role": "Metrics",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Metrics caveat: my signal is not loud in the public summaries. Metrics evidence: The apparent activation drop starts exactly when the tracking event renamed completed_onboarding to setup_done.",
+        "token_count": 31
+      }
+    ]
+  }
+}

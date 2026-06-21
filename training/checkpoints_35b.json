@@ -1,0 +1,39 @@
+{
+  "model_slug": "parliament-qwen36-35b",
+  "model_id": "ad10a3d8-cb8d-40ca-9d8a-89603cd859be",
+  "model_url": "https://hud.ai/models/ad10a3d8-cb8d-40ca-9d8a-89603cd859be",
+  "base_model": "Qwen/Qwen3.6-35B-A3B",
+  "notes": "Sampler weights are hosted on HUD/Tinker; eval with -m parliament-qwen36-35b --gateway serves the active checkpoint head.",
+  "training_config": {
+    "loss_fn": "importance_sampling",
+    "group_size": 8,
+    "learning_rate": 1e-5,
+    "groups_per_batch": 20,
+    "min_reward_filter": 0.1,
+    "eval_requires_return_token_ids": true
+  },
+  "checkpoints": [
+    {
+      "name": "step-000001",
+      "id": "12755bac-f67b-4815-8027-5fb66667d68b",
+      "is_active": true,
+      "created_at": "2026-06-21T06:03:42Z",
+      "num_traces": 832,
+      "num_groups": 104,
+      "mean_reward": 0.758,
+      "training_jobs": ["bf19ae88-281c-499b-8c14-aac795f74e9f"]
+    }
+  ],
+  "eval_jobs": {
+    "baseline_200_tasks_c50": {
+      "id": "bf19ae88-281c-499b-8c14-aac795f74e9f",
+      "tasks": 200,
+      "group_size": 8,
+      "rollouts": 1600,
+      "mean_reward": 0.674,
+      "clean_groups": 104,
+      "clean_traces": 832,
+      "clean_mean_reward": 0.758
+    }
+  }
+}

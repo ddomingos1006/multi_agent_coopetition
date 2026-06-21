@@ -26,30 +26,45 @@ def clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:
 
 
 def parse_raw_verdict(raw_answer: str | None, world: World) -> Verdict | None:
-    """Parse a raw JSON final answer if submit_verdict was not used."""
+    """Parse a raw, fenced, or prose-embedded JSON verdict as a fallback."""
 
     if not raw_answer:
         return None
+    decoder = json.JSONDecoder()
+    candidates: list[dict[str, Any]] = []
     try:
-        data = json.loads(raw_answer)
+        parsed = json.loads(raw_answer)
+        if isinstance(parsed, dict):
+            candidates.append(parsed)
     except json.JSONDecodeError:
-        return None
-    decision = data.get("decision")
-    root_cause = data.get("root_cause")
-    confidence = data.get("confidence", 0.0)
-    citations = data.get("citation_ids", data.get("citations", []))
-    rationale = data.get("rationale", "")
-    if decision not in world.decision_options or root_cause not in world.root_cause_options:
-        return None
-    if not isinstance(confidence, (int, float)):
-        return None
-    return Verdict(
-        decision=decision,
-        confidence=clamp(float(confidence)),
-        root_cause=root_cause,
-        citations=[str(item) for item in citations] if isinstance(citations, list) else [],
-        rationale=str(rationale),
-    )
+        for index, char in enumerate(raw_answer):
+            if char != "{":
+                continue
+            try:
+                parsed, _end = decoder.raw_decode(raw_answer[index:])
+            except json.JSONDecodeError:
+                continue
+            if isinstance(parsed, dict):
+                candidates.append(parsed)
+
+    for data in reversed(candidates):
+        decision = data.get("decision")
+        root_cause = data.get("root_cause")
+        confidence = data.get("confidence", 0.0)
+        citations = data.get("citation_ids", data.get("citations", []))
+        rationale = data.get("rationale", "")
+        if decision not in world.decision_options or root_cause not in world.root_cause_options:
+            continue
+        if not isinstance(confidence, (int, float)):
+            continue
+        return Verdict(
+            decision=decision,
+            confidence=clamp(float(confidence)),
+            root_cause=root_cause,
+            citations=[str(item) for item in citations] if isinstance(citations, list) else [],
+            rationale=str(rationale),
+        )
+    return None
 
 
 def score_world(world: World, raw_answer: str | None = None) -> RewardBreakdown:

@@ -4,7 +4,7 @@ from copy import deepcopy
 
 from parliament.models import Verdict
 from parliament.policies import loud_capture, targeted_oracle
-from parliament.scoring import score_world
+from parliament.scoring import parse_raw_verdict, score_world
 from parliament.state import register_world, reset_worlds
 from parliament.tools import cross_examine, grant_floor, submit_verdict
 from parliament.worlds import build_world
@@ -44,6 +44,23 @@ def test_lucky_guess_capped() -> None:
     result = score_world(world)
     assert result.reward < 0.40
     assert result.subscores["evidence_recall"] == 0.0
+
+
+def test_parse_fenced_or_embedded_json_verdict() -> None:
+    world = _fresh()
+    payload = {
+        "decision": world.truth_decision,
+        "confidence": 0.85,
+        "root_cause": world.truth_root_cause,
+        "citation_ids": ["T1"],
+        "rationale": "grounded answer",
+    }
+    encoded = __import__("json").dumps(payload)
+    for answer in (f"```json\n{encoded}\n```", f"Here is the verdict:\n{encoded}\nDone."):
+        verdict = parse_raw_verdict(answer, world)
+        assert verdict is not None
+        assert verdict.decision == world.truth_decision
+        assert verdict.root_cause == world.truth_root_cause
 
 
 def test_wrong_root_cause_penalized() -> None:

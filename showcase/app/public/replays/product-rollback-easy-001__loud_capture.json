@@ -1,0 +1,250 @@
+{
+  "meta": {
+    "world_id": "product-rollback-easy-001",
+    "domain": "product_rollback",
+    "difficulty": "easy",
+    "policy_id": "loud_capture",
+    "policy_label": "Loud Capture",
+    "generated_at": "2026-06-21T10:50:19.624602+00:00"
+  },
+  "world": {
+    "world_id": "product-rollback-easy-001",
+    "domain": "product_rollback",
+    "difficulty": "easy",
+    "narrative": "An internal product review is deciding whether to roll back Feature X after launch.",
+    "token_budget": 650,
+    "max_interactions": 12,
+    "decision_options": [
+      "rollback",
+      "do_not_rollback",
+      "partial_rollback",
+      "uncertain"
+    ],
+    "root_cause_options": [
+      "mobile_latency",
+      "onboarding_copy",
+      "pricing_change",
+      "data_bug",
+      "seasonality",
+      "unknown"
+    ],
+    "ground_truth": {
+      "decision": "do_not_rollback",
+      "root_cause": "data_bug"
+    }
+  },
+  "reward": {
+    "reward": 0.124,
+    "subscores": {
+      "gated_decision_accuracy": 0.024999999999999994,
+      "gated_root_cause_accuracy": 0.0,
+      "evidence_recall": 0.0,
+      "evidence_precision": 0.5571428571428572,
+      "non_redundancy": 1.0,
+      "citation_quality": 0.0,
+      "budget_discipline": 1.0,
+      "unsupported_claim_penalty": 0.9
+    },
+    "metadata": {
+      "budget_used": 70,
+      "budget_total": 650,
+      "num_interactions": 2,
+      "final_decision": "rollback",
+      "final_root_cause": "mobile_latency",
+      "confidence": 0.8,
+      "total_record_tokens": 70,
+      "relevant_tokens": 39,
+      "decoy_tokens": 15,
+      "fluff_tokens": 16,
+      "duplicate_tokens": 0,
+      "cited_testimony_ids": [
+        "T2"
+      ],
+      "valid_citation_ids": [
+        "T2"
+      ]
+    }
+  },
+  "timeline": [
+    {
+      "index": 0,
+      "type": "session_start",
+      "payload": {
+        "narrative": "An internal product review is deciding whether to roll back Feature X after launch.",
+        "specialists": [
+          {
+            "id": "infra",
+            "name": "Infra",
+            "role": "Infra",
+            "public_bid": "I can summarize structured system behavior without claiming certainty from the public bid. Requesting 82 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 82,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "support",
+            "name": "Support",
+            "role": "Support",
+            "public_bid": "I saw mixed signals from user reports, including some anecdotes that may or may not generalize. Requesting 82 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 82,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "sales",
+            "name": "Sales",
+            "role": "Sales",
+            "public_bid": "My lane has a high-priority story and I can give concrete examples. Requesting 136 tokens.",
+            "claimed_priority": "high",
+            "requested_tokens": 136,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "experimentation",
+            "name": "Experimentation",
+            "role": "Experimentation",
+            "public_bid": "I can summarize structured sample quality without claiming certainty from the public bid. Requesting 82 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 82,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "metrics",
+            "name": "Metrics",
+            "role": "Metrics",
+            "public_bid": "I have a mild-looking measurement quality signal that may be worth checking if budget allows. Requesting 55 tokens.",
+            "claimed_priority": "low",
+            "requested_tokens": 55,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          }
+        ],
+        "budget_total": 650,
+        "max_interactions": 12
+      }
+    },
+    {
+      "index": 1,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "product-rollback-easy-001",
+        "specialist_id": "sales",
+        "token_budget": 136
+      },
+      "budget_used": 31,
+      "budget_remaining": 619,
+      "budget_total": 650,
+      "interactions_used": 1,
+      "max_interactions": 12,
+      "testimony_added": {
+        "id": "T1",
+        "specialist_id": "sales",
+        "specialist_name": "Sales",
+        "role": "Sales",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Sales framing: the headline looks urgent, but I will separate examples from proof. Example from Sales: A large prospect paused a demo for unrelated procurement review.",
+        "token_count": 31
+      },
+      "verdict": null
+    },
+    {
+      "index": 2,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "product-rollback-easy-001",
+        "specialist_id": "infra",
+        "token_budget": 82
+      },
+      "budget_used": 70,
+      "budget_remaining": 580,
+      "budget_total": 650,
+      "interactions_used": 2,
+      "max_interactions": 12,
+      "testimony_added": {
+        "id": "T2",
+        "specialist_id": "infra",
+        "specialist_name": "Infra",
+        "role": "Infra",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Infra evidence: A 12-minute latency blip occurred in a different region and did not overlap the affected metric window. Infra evidence: Executive review notes show no customer escalation tied to the launch date.",
+        "token_count": 39
+      },
+      "verdict": null
+    },
+    {
+      "index": 3,
+      "type": "tool_call",
+      "tool": "submit_verdict",
+      "ok": true,
+      "message": "verdict recorded",
+      "args": {
+        "world_id": "product-rollback-easy-001",
+        "decision": "rollback",
+        "confidence": 0.8,
+        "root_cause": "mobile_latency",
+        "citation_ids": [
+          "T2"
+        ],
+        "rationale": "The loudest testimony appeared to support mobile_latency."
+      },
+      "budget_used": 70,
+      "budget_remaining": 580,
+      "budget_total": 650,
+      "interactions_used": 2,
+      "max_interactions": 12,
+      "testimony_added": null,
+      "verdict": {
+        "decision": "rollback",
+        "confidence": 0.8,
+        "root_cause": "mobile_latency",
+        "citation_ids": [
+          "T2"
+        ],
+        "rationale": "The loudest testimony appeared to support mobile_latency."
+      }
+    }
+  ],
+  "final_record": {
+    "budget_used": 70,
+    "budget_remaining": 580,
+    "testimony": [
+      {
+        "id": "T1",
+        "specialist_id": "sales",
+        "specialist_name": "Sales",
+        "role": "Sales",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Sales framing: the headline looks urgent, but I will separate examples from proof. Example from Sales: A large prospect paused a demo for unrelated procurement review.",
+        "token_count": 31
+      },
+      {
+        "id": "T2",
+        "specialist_id": "infra",
+        "specialist_name": "Infra",
+        "role": "Infra",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Infra evidence: A 12-minute latency blip occurred in a different region and did not overlap the affected metric window. Infra evidence: Executive review notes show no customer escalation tied to the launch date.",
+        "token_count": 39
+      }
+    ]
+  }
+}

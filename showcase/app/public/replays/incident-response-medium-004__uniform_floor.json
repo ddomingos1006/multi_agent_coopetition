@@ -1,0 +1,423 @@
+{
+  "meta": {
+    "world_id": "incident-response-medium-004",
+    "domain": "incident_response",
+    "difficulty": "medium",
+    "policy_id": "uniform_floor",
+    "policy_label": "Uniform Floor",
+    "generated_at": "2026-06-21T10:50:19.621254+00:00"
+  },
+  "world": {
+    "world_id": "incident-response-medium-004",
+    "domain": "incident_response",
+    "difficulty": "medium",
+    "narrative": "An incident commander must diagnose a production incident and choose action.",
+    "token_budget": 500,
+    "max_interactions": 10,
+    "decision_options": [
+      "rollback_feature_flag",
+      "scale_database",
+      "patch_config",
+      "disable_endpoint",
+      "no_action_monitor",
+      "uncertain"
+    ],
+    "root_cause_options": [
+      "database_lock_contention",
+      "cache_thundering_herd",
+      "frontend_regression",
+      "third_party_api",
+      "bad_metrics_pipeline",
+      "unknown"
+    ],
+    "ground_truth": {
+      "decision": "rollback_feature_flag",
+      "root_cause": "cache_thundering_herd"
+    }
+  },
+  "reward": {
+    "reward": 0.52586,
+    "subscores": {
+      "gated_decision_accuracy": 0.19,
+      "gated_root_cause_accuracy": 0.0,
+      "evidence_recall": 1.0,
+      "evidence_precision": 0.5981308411214953,
+      "non_redundancy": 1.0,
+      "citation_quality": 0.5217391304347826,
+      "budget_discipline": 1.0,
+      "unsupported_claim_penalty": 0.7000000000000001
+    },
+    "metadata": {
+      "budget_used": 214,
+      "budget_total": 500,
+      "num_interactions": 6,
+      "final_decision": "scale_database",
+      "final_root_cause": "database_lock_contention",
+      "confidence": 0.62,
+      "total_record_tokens": 214,
+      "relevant_tokens": 128,
+      "decoy_tokens": 54,
+      "fluff_tokens": 32,
+      "duplicate_tokens": 0,
+      "cited_testimony_ids": [
+        "T2",
+        "T3",
+        "T5"
+      ],
+      "valid_citation_ids": [
+        "T2",
+        "T3",
+        "T5"
+      ]
+    }
+  },
+  "timeline": [
+    {
+      "index": 0,
+      "type": "session_start",
+      "payload": {
+        "narrative": "An incident commander must diagnose a production incident and choose action.",
+        "specialists": [
+          {
+            "id": "support",
+            "name": "Support",
+            "role": "Support",
+            "public_bid": "I have a mild-looking user reports signal that may be worth checking if budget allows. Requesting 67 tokens.",
+            "claimed_priority": "low",
+            "requested_tokens": 67,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "oncall_manager",
+            "name": "On-call Manager",
+            "role": "On-call Manager",
+            "public_bid": "My lane has a high-priority story and I can give concrete examples. Requesting 148 tokens.",
+            "claimed_priority": "high",
+            "requested_tokens": 148,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "observability",
+            "name": "Observability/SRE",
+            "role": "Observability/SRE",
+            "public_bid": "I can summarize structured measurement quality without claiming certainty from the public bid. Requesting 94 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 94,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "api",
+            "name": "API",
+            "role": "API",
+            "public_bid": "I can summarize structured system behavior without claiming certainty from the public bid. Requesting 94 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 94,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "database",
+            "name": "Database",
+            "role": "Database",
+            "public_bid": "I can summarize structured system behavior without claiming certainty from the public bid. Requesting 94 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 94,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "frontend",
+            "name": "Frontend",
+            "role": "Frontend",
+            "public_bid": "I saw mixed signals from cache thundering herd, including some anecdotes that may or may not generalize. Requesting 94 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 94,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          }
+        ],
+        "budget_total": 500,
+        "max_interactions": 10
+      }
+    },
+    {
+      "index": 1,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "incident-response-medium-004",
+        "specialist_id": "support",
+        "token_budget": 83
+      },
+      "budget_used": 58,
+      "budget_remaining": 442,
+      "budget_total": 500,
+      "interactions_used": 1,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T1",
+        "specialist_id": "support",
+        "specialist_name": "Support",
+        "role": "Support",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Support caveat: my signal is not loud in the public summaries. Support evidence: Error rate jumped from 0.4% to 7.8% exactly four minutes after the recommendation-cache flag reached 100%. Support evidence: Customers described slow recommendations before checkout failures, matching the upstream symptom.",
+        "token_count": 58
+      },
+      "verdict": null
+    },
+    {
+      "index": 2,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "incident-response-medium-004",
+        "specialist_id": "oncall_manager",
+        "token_budget": 88
+      },
+      "budget_used": 114,
+      "budget_remaining": 386,
+      "budget_total": 500,
+      "interactions_used": 2,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T2",
+        "specialist_id": "oncall_manager",
+        "specialist_name": "On-call Manager",
+        "role": "On-call Manager",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "On-call Manager framing: the headline looks urgent, but I will separate examples from proof. Example from On-call Manager: A database backup started near the incident, creating a normal CPU bump. Example from On-call Manager: A harmless logging deploy finished 25 minutes earlier.",
+        "token_count": 56
+      },
+      "verdict": null
+    },
+    {
+      "index": 3,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "incident-response-medium-004",
+        "specialist_id": "observability",
+        "token_budget": 90
+      },
+      "budget_used": 137,
+      "budget_remaining": 363,
+      "budget_total": 500,
+      "interactions_used": 3,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T3",
+        "specialist_id": "observability",
+        "specialist_name": "Observability/SRE",
+        "role": "Observability/SRE",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Observability/SRE evidence: Cache miss rate rose from 12% to 83% while database CPU followed 11 minutes later.",
+        "token_count": 23
+      },
+      "verdict": null
+    },
+    {
+      "index": 4,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "incident-response-medium-004",
+        "specialist_id": "api",
+        "token_budget": 90
+      },
+      "budget_used": 159,
+      "budget_remaining": 341,
+      "budget_total": 500,
+      "interactions_used": 4,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T4",
+        "specialist_id": "api",
+        "specialist_name": "API",
+        "role": "API",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "API evidence: The affected endpoint is /recommendations; checkout and account APIs stayed under 0.6% errors.",
+        "token_count": 22
+      },
+      "verdict": null
+    },
+    {
+      "index": 5,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "incident-response-medium-004",
+        "specialist_id": "database",
+        "token_budget": 90
+      },
+      "budget_used": 197,
+      "budget_remaining": 303,
+      "budget_total": 500,
+      "interactions_used": 5,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T5",
+        "specialist_id": "database",
+        "specialist_name": "Database",
+        "role": "Database",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Database evidence: Rolling the flag back on one canary node dropped database reads by 68% in that shard. Database evidence: The lock dashboard shows waits as a downstream effect after cache misses spike.",
+        "token_count": 38
+      },
+      "verdict": null
+    },
+    {
+      "index": 6,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "incident-response-medium-004",
+        "specialist_id": "frontend",
+        "token_budget": 90
+      },
+      "budget_used": 214,
+      "budget_remaining": 286,
+      "budget_total": 500,
+      "interactions_used": 6,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T6",
+        "specialist_id": "frontend",
+        "specialist_name": "Frontend",
+        "role": "Frontend",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Frontend evidence: Browser console warnings rose, but they came from an unrelated ad script.",
+        "token_count": 17
+      },
+      "verdict": null
+    },
+    {
+      "index": 7,
+      "type": "tool_call",
+      "tool": "submit_verdict",
+      "ok": true,
+      "message": "verdict recorded",
+      "args": {
+        "world_id": "incident-response-medium-004",
+        "decision": "scale_database",
+        "confidence": 0.62,
+        "root_cause": "database_lock_contention",
+        "citation_ids": [
+          "T2",
+          "T3",
+          "T5"
+        ],
+        "rationale": "The visible record most strongly points to database_lock_contention."
+      },
+      "budget_used": 214,
+      "budget_remaining": 286,
+      "budget_total": 500,
+      "interactions_used": 6,
+      "max_interactions": 10,
+      "testimony_added": null,
+      "verdict": {
+        "decision": "scale_database",
+        "confidence": 0.62,
+        "root_cause": "database_lock_contention",
+        "citation_ids": [
+          "T2",
+          "T3",
+          "T5"
+        ],
+        "rationale": "The visible record most strongly points to database_lock_contention."
+      }
+    }
+  ],
+  "final_record": {
+    "budget_used": 214,
+    "budget_remaining": 286,
+    "testimony": [
+      {
+        "id": "T1",
+        "specialist_id": "support",
+        "specialist_name": "Support",
+        "role": "Support",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Support caveat: my signal is not loud in the public summaries. Support evidence: Error rate jumped from 0.4% to 7.8% exactly four minutes after the recommendation-cache flag reached 100%. Support evidence: Customers described slow recommendations before checkout failures, matching the upstream symptom.",
+        "token_count": 58
+      },
+      {
+        "id": "T2",
+        "specialist_id": "oncall_manager",
+        "specialist_name": "On-call Manager",
+        "role": "On-call Manager",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "On-call Manager framing: the headline looks urgent, but I will separate examples from proof. Example from On-call Manager: A database backup started near the incident, creating a normal CPU bump. Example from On-call Manager: A harmless logging deploy finished 25 minutes earlier.",
+        "token_count": 56
+      },
+      {
+        "id": "T3",
+        "specialist_id": "observability",
+        "specialist_name": "Observability/SRE",
+        "role": "Observability/SRE",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Observability/SRE evidence: Cache miss rate rose from 12% to 83% while database CPU followed 11 minutes later.",
+        "token_count": 23
+      },
+      {
+        "id": "T4",
+        "specialist_id": "api",
+        "specialist_name": "API",
+        "role": "API",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "API evidence: The affected endpoint is /recommendations; checkout and account APIs stayed under 0.6% errors.",
+        "token_count": 22
+      },
+      {
+        "id": "T5",
+        "specialist_id": "database",
+        "specialist_name": "Database",
+        "role": "Database",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Database evidence: Rolling the flag back on one canary node dropped database reads by 68% in that shard. Database evidence: The lock dashboard shows waits as a downstream effect after cache misses spike.",
+        "token_count": 38
+      },
+      {
+        "id": "T6",
+        "specialist_id": "frontend",
+        "specialist_name": "Frontend",
+        "role": "Frontend",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Frontend evidence: Browser console warnings rose, but they came from an unrelated ad script.",
+        "token_count": 17
+      }
+    ]
+  }
+}

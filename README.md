@@ -168,3 +168,20 @@ tests/
 - official-record compression
 - public cache or shared memory
 - real document shards
+
+## Modal benchmark runner
+
+`modal_benchmark.py` runs the trained and base models sequentially against the same HUD task slice.
+The runner caps HUD/Tinker concurrency at four and keeps all execution alive independently of the
+local laptop.
+
+```bash
+uv tool install modal
+modal setup
+modal secret create context-window-parliament-hud HUD_API_KEY="$HUD_API_KEY"
+modal deploy modal_benchmark.py
+modal run modal_benchmark.py --task-start 200 --task-count 30 --rollouts-per-task 2
+```
+
+The default benchmark is 30 held-out tasks with two rollouts per task for each model. Modal provides
+durable orchestration; inference still uses the HUD gateway and its Tinker-backed model endpoint.

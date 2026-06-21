@@ -1,0 +1,73 @@
+{
+  "world_count": 500,
+  "strategies": [
+    {
+      "policy_id": "targeted_oracle",
+      "label": "Trained Speaker",
+      "mean_reward": 0.951822788,
+      "subscore_means": {
+        "gated_decision_accuracy": 0.975,
+        "gated_root_cause_accuracy": 0.8634385853328516,
+        "evidence_recall": 1.0,
+        "evidence_precision": 0.8157869104645371,
+        "non_redundancy": 1.0,
+        "citation_quality": 1.0,
+        "budget_discipline": 1.0,
+        "unsupported_claim_penalty": 0.0
+      },
+      "mean_budget_used": 127.582
+    },
+    {
+      "policy_id": "uniform_floor",
+      "label": "Uniform Floor",
+      "mean_reward": 0.811962716,
+      "subscore_means": {
+        "gated_decision_accuracy": 0.7003626004670768,
+        "gated_root_cause_accuracy": 0.8523074060427365,
+        "evidence_recall": 0.9580790863787422,
+        "evidence_precision": 0.5712731972167865,
+        "non_redundancy": 1.0,
+        "citation_quality": 0.745668911057308,
+        "budget_discipline": 1.0,
+        "unsupported_claim_penalty": 0.08
+      },
+      "mean_budget_used": 247.146
+    },
+    {
+      "policy_id": "loud_capture",
+      "label": "Loud Capture",
+      "mean_reward": 0.275529814,
+      "subscore_means": {
+        "gated_decision_accuracy": 0.1725932633258949,
+        "gated_root_cause_accuracy": 0.15277604814960924,
+        "evidence_recall": 0.24986601381103649,
+        "evidence_precision": 0.3822804425187541,
+        "non_redundancy": 1.0,
+        "citation_quality": 0.1393605005632172,
+        "budget_discipline": 1.0,
+        "unsupported_claim_penalty": 0.5246000000000001
+      },
+      "mean_budget_used": 115.738
+    },
+    {
+      "policy_id": "random",
+      "label": "Random",
+      "mean_reward": 0.429918138,
+      "subscore_means": {
+        "gated_decision_accuracy": 0.29454957316138836,
+        "gated_root_cause_accuracy": 0.29176525790236113,
+        "evidence_recall": 0.46524642307436775,
+        "evidence_precision": 0.5297915509757959,
+        "non_redundancy": 0.9596972124729435,
+        "citation_quality": 0.34048416115718433,
+        "budget_discipline": 1.0,
+        "unsupported_claim_penalty": 0.40140000000000003
+      },
+      "mean_budget_used": 132.636
+    }
+  ],
+  "separation": {
+    "trained_vs_loud": 0.676292974,
+    "trained_vs_uniform": 0.13986007199999995
+  }
+}

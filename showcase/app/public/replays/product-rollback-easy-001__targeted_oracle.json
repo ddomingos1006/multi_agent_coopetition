@@ -1,0 +1,299 @@
+{
+  "meta": {
+    "world_id": "product-rollback-easy-001",
+    "domain": "product_rollback",
+    "difficulty": "easy",
+    "policy_id": "targeted_oracle",
+    "policy_label": "Trained Speaker",
+    "generated_at": "2026-06-21T10:50:19.623146+00:00"
+  },
+  "world": {
+    "world_id": "product-rollback-easy-001",
+    "domain": "product_rollback",
+    "difficulty": "easy",
+    "narrative": "An internal product review is deciding whether to roll back Feature X after launch.",
+    "token_budget": 650,
+    "max_interactions": 12,
+    "decision_options": [
+      "rollback",
+      "do_not_rollback",
+      "partial_rollback",
+      "uncertain"
+    ],
+    "root_cause_options": [
+      "mobile_latency",
+      "onboarding_copy",
+      "pricing_change",
+      "data_bug",
+      "seasonality",
+      "unknown"
+    ],
+    "ground_truth": {
+      "decision": "do_not_rollback",
+      "root_cause": "data_bug"
+    }
+  },
+  "reward": {
+    "reward": 0.944098,
+    "subscores": {
+      "gated_decision_accuracy": 0.975,
+      "gated_root_cause_accuracy": 0.8434065934065935,
+      "evidence_recall": 1.0,
+      "evidence_precision": 0.7777777777777778,
+      "non_redundancy": 1.0,
+      "citation_quality": 1.0,
+      "budget_discipline": 1.0,
+      "unsupported_claim_penalty": 0.0
+    },
+    "metadata": {
+      "budget_used": 81,
+      "budget_total": 650,
+      "num_interactions": 3,
+      "final_decision": "do_not_rollback",
+      "final_root_cause": "data_bug",
+      "confidence": 0.95,
+      "total_record_tokens": 81,
+      "relevant_tokens": 63,
+      "decoy_tokens": 0,
+      "fluff_tokens": 18,
+      "duplicate_tokens": 0,
+      "cited_testimony_ids": [
+        "T1",
+        "T2",
+        "T3"
+      ],
+      "valid_citation_ids": [
+        "T1",
+        "T2",
+        "T3"
+      ]
+    }
+  },
+  "timeline": [
+    {
+      "index": 0,
+      "type": "session_start",
+      "payload": {
+        "narrative": "An internal product review is deciding whether to roll back Feature X after launch.",
+        "specialists": [
+          {
+            "id": "infra",
+            "name": "Infra",
+            "role": "Infra",
+            "public_bid": "I can summarize structured system behavior without claiming certainty from the public bid. Requesting 82 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 82,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "support",
+            "name": "Support",
+            "role": "Support",
+            "public_bid": "I saw mixed signals from user reports, including some anecdotes that may or may not generalize. Requesting 82 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 82,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "sales",
+            "name": "Sales",
+            "role": "Sales",
+            "public_bid": "My lane has a high-priority story and I can give concrete examples. Requesting 136 tokens.",
+            "claimed_priority": "high",
+            "requested_tokens": 136,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "experimentation",
+            "name": "Experimentation",
+            "role": "Experimentation",
+            "public_bid": "I can summarize structured sample quality without claiming certainty from the public bid. Requesting 82 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 82,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "metrics",
+            "name": "Metrics",
+            "role": "Metrics",
+            "public_bid": "I have a mild-looking measurement quality signal that may be worth checking if budget allows. Requesting 55 tokens.",
+            "claimed_priority": "low",
+            "requested_tokens": 55,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          }
+        ],
+        "budget_total": 650,
+        "max_interactions": 12
+      }
+    },
+    {
+      "index": 1,
+      "type": "tool_call",
+      "tool": "cross_examine",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "product-rollback-easy-001",
+        "specialist_id": "metrics",
+        "question": "What concrete evidence do you have about data_bug and this issue: The apparent activation drop starts exactly when the tracking event renamed completed_onboarding to setup_done? Focus on activation apparent bad_metrics_pipeline bug completed completed_onboarding data data_bug.",
+        "token_budget": 70
+      },
+      "budget_used": 25,
+      "budget_remaining": 625,
+      "budget_total": 650,
+      "interactions_used": 1,
+      "max_interactions": 12,
+      "testimony_added": {
+        "id": "T1",
+        "specialist_id": "metrics",
+        "specialist_name": "Metrics",
+        "role": "Metrics",
+        "mode": "cross_exam",
+        "question": "What concrete evidence do you have about data_bug and this issue: The apparent activation drop starts exactly when the tracking event renamed completed_onboarding to setup_done? Focus on activation apparent bad_metrics_pipeline bug completed completed_onboarding data data_bug.",
+        "visible_text": "Answering the targeted question directly: On that point, The apparent activation drop starts exactly when the tracking event renamed completed_onboarding to setup_done.",
+        "token_count": 25
+      },
+      "verdict": null
+    },
+    {
+      "index": 2,
+      "type": "tool_call",
+      "tool": "cross_examine",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "product-rollback-easy-001",
+        "specialist_id": "experimentation",
+        "question": "What concrete evidence do you have about data_bug and this issue: Server-side successful onboarding counts stayed within 0? Focus on baseline bug counts data data_bug experimentation launch onboarding.",
+        "token_budget": 70
+      },
+      "budget_used": 54,
+      "budget_remaining": 596,
+      "budget_total": 650,
+      "interactions_used": 2,
+      "max_interactions": 12,
+      "testimony_added": {
+        "id": "T2",
+        "specialist_id": "experimentation",
+        "specialist_name": "Experimentation",
+        "role": "Experimentation",
+        "mode": "cross_exam",
+        "question": "What concrete evidence do you have about data_bug and this issue: Server-side successful onboarding counts stayed within 0? Focus on baseline bug counts data data_bug experimentation launch onboarding.",
+        "visible_text": "Answering the targeted question directly: On that point, Server-side successful onboarding counts stayed within 0.7% of the pre-launch baseline.",
+        "token_count": 29
+      },
+      "verdict": null
+    },
+    {
+      "index": 3,
+      "type": "tool_call",
+      "tool": "cross_examine",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "product-rollback-easy-001",
+        "specialist_id": "support",
+        "question": "What concrete evidence do you have about data_bug and this issue: Complaint volume changed from 41 to 43 tickets per day, not a material launch spike? Focus on bug changed complaint data data_bug day launch material.",
+        "token_budget": 70
+      },
+      "budget_used": 81,
+      "budget_remaining": 569,
+      "budget_total": 650,
+      "interactions_used": 3,
+      "max_interactions": 12,
+      "testimony_added": {
+        "id": "T3",
+        "specialist_id": "support",
+        "specialist_name": "Support",
+        "role": "Support",
+        "mode": "cross_exam",
+        "question": "What concrete evidence do you have about data_bug and this issue: Complaint volume changed from 41 to 43 tickets per day, not a material launch spike? Focus on bug changed complaint data data_bug day launch material.",
+        "visible_text": "Answering the targeted question directly: On that point, Complaint volume changed from 41 to 43 tickets per day, not a material launch spike.",
+        "token_count": 27
+      },
+      "verdict": null
+    },
+    {
+      "index": 4,
+      "type": "tool_call",
+      "tool": "submit_verdict",
+      "ok": true,
+      "message": "verdict recorded",
+      "args": {
+        "world_id": "product-rollback-easy-001",
+        "decision": "do_not_rollback",
+        "confidence": 0.95,
+        "root_cause": "data_bug",
+        "citation_ids": [
+          "T1",
+          "T2",
+          "T3"
+        ],
+        "rationale": "The cited testimony supports data_bug and the do_not_rollback decision."
+      },
+      "budget_used": 81,
+      "budget_remaining": 569,
+      "budget_total": 650,
+      "interactions_used": 3,
+      "max_interactions": 12,
+      "testimony_added": null,
+      "verdict": {
+        "decision": "do_not_rollback",
+        "confidence": 0.95,
+        "root_cause": "data_bug",
+        "citation_ids": [
+          "T1",
+          "T2",
+          "T3"
+        ],
+        "rationale": "The cited testimony supports data_bug and the do_not_rollback decision."
+      }
+    }
+  ],
+  "final_record": {
+    "budget_used": 81,
+    "budget_remaining": 569,
+    "testimony": [
+      {
+        "id": "T1",
+        "specialist_id": "metrics",
+        "specialist_name": "Metrics",
+        "role": "Metrics",
+        "mode": "cross_exam",
+        "question": "What concrete evidence do you have about data_bug and this issue: The apparent activation drop starts exactly when the tracking event renamed completed_onboarding to setup_done? Focus on activation apparent bad_metrics_pipeline bug completed completed_onboarding data data_bug.",
+        "visible_text": "Answering the targeted question directly: On that point, The apparent activation drop starts exactly when the tracking event renamed completed_onboarding to setup_done.",
+        "token_count": 25
+      },
+      {
+        "id": "T2",
+        "specialist_id": "experimentation",
+        "specialist_name": "Experimentation",
+        "role": "Experimentation",
+        "mode": "cross_exam",
+        "question": "What concrete evidence do you have about data_bug and this issue: Server-side successful onboarding counts stayed within 0? Focus on baseline bug counts data data_bug experimentation launch onboarding.",
+        "visible_text": "Answering the targeted question directly: On that point, Server-side successful onboarding counts stayed within 0.7% of the pre-launch baseline.",
+        "token_count": 29
+      },
+      {
+        "id": "T3",
+        "specialist_id": "support",
+        "specialist_name": "Support",
+        "role": "Support",
+        "mode": "cross_exam",
+        "question": "What concrete evidence do you have about data_bug and this issue: Complaint volume changed from 41 to 43 tickets per day, not a material launch spike? Focus on bug changed complaint data data_bug day launch material.",
+        "visible_text": "Answering the targeted question directly: On that point, Complaint volume changed from 41 to 43 tickets per day, not a material launch spike.",
+        "token_count": 27
+      }
+    ]
+  }
+}

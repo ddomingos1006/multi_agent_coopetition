@@ -1,0 +1,104 @@
+{
+  "presets": [
+    {
+      "world_id": "incident-response-medium-004",
+      "label": "Incident Response",
+      "domain": "incident_response",
+      "difficulty": "medium"
+    },
+    {
+      "world_id": "product-rollback-easy-001",
+      "label": "Product Rollback",
+      "domain": "product_rollback",
+      "difficulty": "easy"
+    },
+    {
+      "world_id": "security-access-review-medium-168",
+      "label": "Security Review",
+      "domain": "security_access_review",
+      "difficulty": "medium"
+    }
+  ],
+  "policies": [
+    {
+      "id": "targeted_oracle",
+      "label": "Trained Speaker",
+      "subtitle": "Cross-examines the right people"
+    },
+    {
+      "id": "loud_capture",
+      "label": "Loud Capture",
+      "subtitle": "Believes the loudest bids"
+    },
+    {
+      "id": "uniform_floor",
+      "label": "Uniform Floor",
+      "subtitle": "Gives everyone a turn"
+    }
+  ],
+  "files": [
+    {
+      "world_id": "incident-response-medium-004",
+      "policy_id": "targeted_oracle",
+      "policy_label": "Trained Speaker",
+      "policy_subtitle": "Cross-examines the right people",
+      "file": "incident-response-medium-004__targeted_oracle.json"
+    },
+    {
+      "world_id": "incident-response-medium-004",
+      "policy_id": "loud_capture",
+      "policy_label": "Loud Capture",
+      "policy_subtitle": "Believes the loudest bids",
+      "file": "incident-response-medium-004__loud_capture.json"
+    },
+    {
+      "world_id": "incident-response-medium-004",
+      "policy_id": "uniform_floor",
+      "policy_label": "Uniform Floor",
+      "policy_subtitle": "Gives everyone a turn",
+      "file": "incident-response-medium-004__uniform_floor.json"
+    },
+    {
+      "world_id": "product-rollback-easy-001",
+      "policy_id": "targeted_oracle",
+      "policy_label": "Trained Speaker",
+      "policy_subtitle": "Cross-examines the right people",
+      "file": "product-rollback-easy-001__targeted_oracle.json"
+    },
+    {
+      "world_id": "product-rollback-easy-001",
+      "policy_id": "loud_capture",
+      "policy_label": "Loud Capture",
+      "policy_subtitle": "Believes the loudest bids",
+      "file": "product-rollback-easy-001__loud_capture.json"
+    },
+    {
+      "world_id": "product-rollback-easy-001",
+      "policy_id": "uniform_floor",
+      "policy_label": "Uniform Floor",
+      "policy_subtitle": "Gives everyone a turn",
+      "file": "product-rollback-easy-001__uniform_floor.json"
+    },
+    {
+      "world_id": "security-access-review-medium-168",
+      "policy_id": "targeted_oracle",
+      "policy_label": "Trained Speaker",
+      "policy_subtitle": "Cross-examines the right people",
+      "file": "security-access-review-medium-168__targeted_oracle.json"
+    },
+    {
+      "world_id": "security-access-review-medium-168",
+      "policy_id": "loud_capture",
+      "policy_label": "Loud Capture",
+      "policy_subtitle": "Believes the loudest bids",
+      "file": "security-access-review-medium-168__loud_capture.json"
+    },
+    {
+      "world_id": "security-access-review-medium-168",
+      "policy_id": "uniform_floor",
+      "policy_label": "Uniform Floor",
+      "policy_subtitle": "Gives everyone a turn",
+      "file": "security-access-review-medium-168__uniform_floor.json"
+    }
+  ]
+}

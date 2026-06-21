@@ -35,6 +35,15 @@ def _tokens_by_specialist(world: World, specialist_id: str) -> int:
     return sum(block.token_count for block in world.official_record if block.specialist_id == specialist_id)
 
 
+def _next_action(world: World) -> str:
+    if world.hearing_closed:
+        return "Call submit_verdict now using a native tool call. Do not output analysis or markup."
+    return (
+        "Your next response must be native tool calls only. If the evidence is sufficient, "
+        "call submit_verdict now; otherwise call an evidence tool."
+    )
+
+
 def _ensure_open(world: World, tool: str, args: dict[str, Any]) -> dict[str, Any] | None:
     world.close_if_exhausted()
     if world.hearing_closed:
@@ -63,6 +72,7 @@ def list_specialists(world_id: str) -> dict[str, Any]:
             specialist.public_card(_tokens_by_specialist(world, specialist.id))
             for specialist in world.specialists.values()
         ],
+        "next_action": _next_action(world),
     }
 
 
@@ -168,6 +178,7 @@ def _testimony_result(world: World, block: Any) -> dict[str, Any]:
         "remaining_budget": world.budget_remaining,
         "interactions_remaining": world.interactions_remaining,
         "hearing_closed": world.hearing_closed,
+        "next_action": _next_action(world),
     }
 
 
@@ -190,6 +201,7 @@ def view_record(world_id: str) -> dict[str, Any]:
             block.visible_dict(world.specialists[block.specialist_id])
             for block in world.official_record
         ],
+        "next_action": _next_action(world),
     }
 
 
@@ -250,7 +262,5 @@ def submit_verdict(
         "ok": True,
         "world_id": world.world_id,
         "verdict": verdict.normalized(),
-        "message": "Verdict recorded. Finish with the same JSON.",
-        "finish_with": verdict.normalized(),
+        "message": "Verdict recorded. The task is complete; do not repeat or reconsider it.",
     }
-

@@ -1,0 +1,432 @@
+{
+  "meta": {
+    "world_id": "security-access-review-medium-168",
+    "domain": "security_access_review",
+    "difficulty": "medium",
+    "policy_id": "uniform_floor",
+    "policy_label": "Uniform Floor",
+    "generated_at": "2026-06-21T10:50:19.636678+00:00"
+  },
+  "world": {
+    "world_id": "security-access-review-medium-168",
+    "domain": "security_access_review",
+    "difficulty": "medium",
+    "narrative": "A security review board must decide how to respond to an access anomaly.",
+    "token_budget": 500,
+    "max_interactions": 10,
+    "decision_options": [
+      "disable_account",
+      "revoke_role",
+      "revoke_token",
+      "block_oauth_app",
+      "close_false_positive",
+      "rotate_secret",
+      "monitor",
+      "uncertain"
+    ],
+    "root_cause_options": [
+      "phishing_compromise",
+      "overbroad_role",
+      "orphaned_token",
+      "oauth_app_abuse",
+      "false_positive_alert",
+      "contractor_offboarding",
+      "secret_leak",
+      "impossible_travel",
+      "unknown"
+    ],
+    "ground_truth": {
+      "decision": "revoke_role",
+      "root_cause": "overbroad_role"
+    }
+  },
+  "reward": {
+    "reward": 0.873441,
+    "subscores": {
+      "gated_decision_accuracy": 0.81,
+      "gated_root_cause_accuracy": 1.0,
+      "evidence_recall": 1.0,
+      "evidence_precision": 0.5638297872340425,
+      "non_redundancy": 1.0,
+      "citation_quality": 0.7157894736842105,
+      "budget_discipline": 1.0,
+      "unsupported_claim_penalty": 0.0
+    },
+    "metadata": {
+      "budget_used": 282,
+      "budget_total": 500,
+      "num_interactions": 6,
+      "final_decision": "revoke_role",
+      "final_root_cause": "overbroad_role",
+      "confidence": 0.62,
+      "total_record_tokens": 282,
+      "relevant_tokens": 159,
+      "decoy_tokens": 110,
+      "fluff_tokens": 13,
+      "duplicate_tokens": 0,
+      "cited_testimony_ids": [
+        "T1",
+        "T3",
+        "T4",
+        "T5"
+      ],
+      "valid_citation_ids": [
+        "T1",
+        "T3",
+        "T4",
+        "T5"
+      ]
+    }
+  },
+  "timeline": [
+    {
+      "index": 0,
+      "type": "session_start",
+      "payload": {
+        "narrative": "A security review board must decide how to respond to an access anomaly.",
+        "specialists": [
+          {
+            "id": "soc_analyst",
+            "name": "SOC Analyst",
+            "role": "SOC Analyst",
+            "public_bid": "I saw mixed signals from alert evidence, including some anecdotes that may or may not generalize. Requesting 94 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 94,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "app_owner",
+            "name": "App Owner",
+            "role": "App Owner",
+            "public_bid": "I can explain the decision context and risks from my seat, though some details are sensitive. Requesting 108 tokens.",
+            "claimed_priority": "high",
+            "requested_tokens": 108,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "hr_ops",
+            "name": "HR Ops",
+            "role": "HR Ops",
+            "public_bid": "I can summarize structured offboarding records without claiming certainty from the public bid. Requesting 94 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 94,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "network",
+            "name": "Network",
+            "role": "Network",
+            "public_bid": "I can summarize structured network telemetry without claiming certainty from the public bid. Requesting 94 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 94,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "compliance",
+            "name": "Compliance",
+            "role": "Compliance",
+            "public_bid": "I can summarize structured audit evidence without claiming certainty from the public bid. Requesting 94 tokens.",
+            "claimed_priority": "medium",
+            "requested_tokens": 94,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          },
+          {
+            "id": "identity",
+            "name": "Identity",
+            "role": "Identity",
+            "public_bid": "I have a mild-looking access evidence signal that may be worth checking if budget allows. Requesting 67 tokens.",
+            "claimed_priority": "low",
+            "requested_tokens": 67,
+            "has_spoken": false,
+            "times_heard": 0,
+            "total_tokens_used": 0
+          }
+        ],
+        "budget_total": 500,
+        "max_interactions": 10
+      }
+    },
+    {
+      "index": 1,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "security-access-review-medium-168",
+        "specialist_id": "soc_analyst",
+        "token_budget": 83
+      },
+      "budget_used": 58,
+      "budget_remaining": 442,
+      "budget_total": 500,
+      "interactions_used": 1,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T1",
+        "specialist_id": "soc_analyst",
+        "specialist_name": "SOC Analyst",
+        "role": "SOC Analyst",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "SOC Analyst evidence: The temporary analyst accounts slice shows the same overbroad role pattern after the emergency role grant, while standard analyst accounts stayed within 2% of baseline. SOC Analyst evidence: The broad weekly report changed by 6%, but it uses a lagging denominator and cannot isolate temporary analyst accounts.",
+        "token_count": 58
+      },
+      "verdict": null
+    },
+    {
+      "index": 2,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "security-access-review-medium-168",
+        "specialist_id": "app_owner",
+        "token_budget": 88
+      },
+      "budget_used": 93,
+      "budget_remaining": 407,
+      "budget_total": 500,
+      "interactions_used": 2,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T2",
+        "specialist_id": "app_owner",
+        "specialist_name": "App Owner",
+        "role": "App Owner",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Context I am comfortable putting on record: A senior reviewer flagged a noisy anecdote about new dashboard rollout near Permission audit, but the anecdote came from a case outside the decision window.",
+        "token_count": 35
+      },
+      "verdict": null
+    },
+    {
+      "index": 3,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "security-access-review-medium-168",
+        "specialist_id": "hr_ops",
+        "token_budget": 90
+      },
+      "budget_used": 138,
+      "budget_remaining": 362,
+      "budget_total": 500,
+      "interactions_used": 3,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T3",
+        "specialist_id": "hr_ops",
+        "specialist_name": "HR Ops",
+        "role": "HR Ops",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "HR Ops evidence: The operational timeline rules out new dashboard rollout because its timestamp lands outside two business days. HR Ops evidence: One Permission audit escalation looked severe because it was copied into three queues, not because overbroad role repeated.",
+        "token_count": 45
+      },
+      "verdict": null
+    },
+    {
+      "index": 4,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "security-access-review-medium-168",
+        "specialist_id": "network",
+        "token_budget": 90
+      },
+      "budget_used": 165,
+      "budget_remaining": 335,
+      "budget_total": 500,
+      "interactions_used": 4,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T4",
+        "specialist_id": "network",
+        "specialist_name": "Network",
+        "role": "Network",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Network evidence: A blind audit of Permission audit found the decisive anomaly only when the team filtered for overbroad role rather than the public headline.",
+        "token_count": 27
+      },
+      "verdict": null
+    },
+    {
+      "index": 5,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "security-access-review-medium-168",
+        "specialist_id": "compliance",
+        "token_budget": 90
+      },
+      "budget_used": 218,
+      "budget_remaining": 282,
+      "budget_total": 500,
+      "interactions_used": 5,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T5",
+        "specialist_id": "compliance",
+        "specialist_name": "Compliance",
+        "role": "Compliance",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Compliance evidence: When the team tried revoke the broad role, the affected slice improved from 46% to 5% without moving the unaffected controls. Compliance evidence: A visible stakeholder dashboard for Permission audit highlighted new dashboard rollout, but that panel aggregates unaffected and affected records together.",
+        "token_count": 53
+      },
+      "verdict": null
+    },
+    {
+      "index": 6,
+      "type": "tool_call",
+      "tool": "grant_floor",
+      "ok": true,
+      "message": "testimony recorded",
+      "args": {
+        "world_id": "security-access-review-medium-168",
+        "specialist_id": "identity",
+        "token_budget": 90
+      },
+      "budget_used": 282,
+      "budget_remaining": 218,
+      "budget_total": 500,
+      "interactions_used": 6,
+      "max_interactions": 10,
+      "testimony_added": {
+        "id": "T6",
+        "specialist_id": "identity",
+        "specialist_name": "Identity",
+        "role": "Identity",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Identity caveat: my signal is not loud in the public summaries. Identity evidence: Permission audit privileged-action rate moved from 3% to 46% during two business days, and the rows share overbroad role markers. Identity evidence: The smallest safe intervention is revoke the broad role, which addresses overbroad role without broad collateral changes.",
+        "token_count": 64
+      },
+      "verdict": null
+    },
+    {
+      "index": 7,
+      "type": "tool_call",
+      "tool": "submit_verdict",
+      "ok": true,
+      "message": "verdict recorded",
+      "args": {
+        "world_id": "security-access-review-medium-168",
+        "decision": "revoke_role",
+        "confidence": 0.62,
+        "root_cause": "overbroad_role",
+        "citation_ids": [
+          "T1",
+          "T3",
+          "T4",
+          "T5"
+        ],
+        "rationale": "The visible record most strongly points to overbroad_role."
+      },
+      "budget_used": 282,
+      "budget_remaining": 218,
+      "budget_total": 500,
+      "interactions_used": 6,
+      "max_interactions": 10,
+      "testimony_added": null,
+      "verdict": {
+        "decision": "revoke_role",
+        "confidence": 0.62,
+        "root_cause": "overbroad_role",
+        "citation_ids": [
+          "T1",
+          "T3",
+          "T4",
+          "T5"
+        ],
+        "rationale": "The visible record most strongly points to overbroad_role."
+      }
+    }
+  ],
+  "final_record": {
+    "budget_used": 282,
+    "budget_remaining": 218,
+    "testimony": [
+      {
+        "id": "T1",
+        "specialist_id": "soc_analyst",
+        "specialist_name": "SOC Analyst",
+        "role": "SOC Analyst",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "SOC Analyst evidence: The temporary analyst accounts slice shows the same overbroad role pattern after the emergency role grant, while standard analyst accounts stayed within 2% of baseline. SOC Analyst evidence: The broad weekly report changed by 6%, but it uses a lagging denominator and cannot isolate temporary analyst accounts.",
+        "token_count": 58
+      },
+      {
+        "id": "T2",
+        "specialist_id": "app_owner",
+        "specialist_name": "App Owner",
+        "role": "App Owner",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Context I am comfortable putting on record: A senior reviewer flagged a noisy anecdote about new dashboard rollout near Permission audit, but the anecdote came from a case outside the decision window.",
+        "token_count": 35
+      },
+      {
+        "id": "T3",
+        "specialist_id": "hr_ops",
+        "specialist_name": "HR Ops",
+        "role": "HR Ops",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "HR Ops evidence: The operational timeline rules out new dashboard rollout because its timestamp lands outside two business days. HR Ops evidence: One Permission audit escalation looked severe because it was copied into three queues, not because overbroad role repeated.",
+        "token_count": 45
+      },
+      {
+        "id": "T4",
+        "specialist_id": "network",
+        "specialist_name": "Network",
+        "role": "Network",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Network evidence: A blind audit of Permission audit found the decisive anomaly only when the team filtered for overbroad role rather than the public headline.",
+        "token_count": 27
+      },
+      {
+        "id": "T5",
+        "specialist_id": "compliance",
+        "specialist_name": "Compliance",
+        "role": "Compliance",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Compliance evidence: When the team tried revoke the broad role, the affected slice improved from 46% to 5% without moving the unaffected controls. Compliance evidence: A visible stakeholder dashboard for Permission audit highlighted new dashboard rollout, but that panel aggregates unaffected and affected records together.",
+        "token_count": 53
+      },
+      {
+        "id": "T6",
+        "specialist_id": "identity",
+        "specialist_name": "Identity",
+        "role": "Identity",
+        "mode": "floor",
+        "question": null,
+        "visible_text": "Identity caveat: my signal is not loud in the public summaries. Identity evidence: Permission audit privileged-action rate moved from 3% to 46% during two business days, and the rows share overbroad role markers. Identity evidence: The smallest safe intervention is revoke the broad role, which addresses overbroad role without broad collateral changes.",
+        "token_count": 64
+      }
+    ]
+  }
+}

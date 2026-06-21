@@ -7,4 +7,8 @@ __pycache__/
 pytest-cache-files-*/
 skills-lock.json
 .hud_eval.local.toml
+node_modules/
+.next/
+showcase/app/.next/
+showcase/**/node_modules/
 
